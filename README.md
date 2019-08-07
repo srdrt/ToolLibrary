@@ -1,8 +1,8 @@
-# Sample PrimeApps Project (.NET Core)
+## Sample PrimeApps Project (.NET Core)
 
 This sample demonstrates how to develop a PrimeApps project using .NET Core 2.2.
 
-## Local Setup
+### Local Setup
 
 Before running this sample locally, you need to install PostgreSQL, Redis and Minio. Please follow [installation guide](https://). Then follow the steps below.
 
@@ -12,7 +12,7 @@ Before running this sample locally, you need to install PostgreSQL, Redis and Mi
 4. Copy startup folder
 5. Run `run` command
 
-### 1. Clone this repository
+#### 1. Clone this repository
 ```bash
 git clone https://github.com/primeapps-io/sample-dotnet.git
 ```
@@ -22,7 +22,7 @@ Enter folder:
 cd sample-dotnet
 ```
 
-### 2. Run `database` command
+#### 2. Run `database` command
 Run the following command to create databases to your local PostgreSQL server.
 
 Enter database folder:
@@ -35,7 +35,7 @@ Create databases:
 ./database -c
 ```
 
-### 3. Clone PrimeApps Runtime Environment (PRE)
+#### 3. Clone PrimeApps Runtime Environment (PRE)
 ```bash
 git clone https://github.com/primeapps-io/pre.git
 ```
@@ -44,14 +44,14 @@ Enter folder:
 cd pre
 ```
 
-### 4. Copy startup folder
+#### 4. Copy startup folder
 Copy startup folder to sample-dotnet root
 
 ```bash
 rsync -r ../sample-dotnet/startup .
 ```
 
-### 5. Run `run` command
+#### 5. Run `run` command
 Enter startup folder:
 ```bash
 cd startup
