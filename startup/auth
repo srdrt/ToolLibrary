@@ -1,0 +1,10 @@
+#!/bin/bash
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+echo -e "${GREEN}auth${NC}"
+
+cd ..
+cd PrimeApps.Auth
+export ASPNETCORE_ENVIRONMENT=Development
+dotnet PrimeApps.Auth.dll --urls='http://localhost:5000'

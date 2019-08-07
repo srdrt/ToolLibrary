@@ -1,0 +1,54 @@
+#!/bin/bash
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+echo -n "Password (press enter if empty)":
+read -s password
+export PGPASSWORD=$password
+
+if [ "$( psql -U postgres -w -tAc "SELECT 1 FROM pg_database WHERE datname='postgres'" )" = '1' ]
+then
+    for arg in "$@"
+    do
+        if [ "$arg" == "--create" ] || [ "$arg" == "-c" ]
+        then
+            echo -e "${GREEN}Creating databases...${NC}"
+            echo -e "${GREEN}Platform database${NC}"
+            createdb -U postgres --template=template0 --encoding=UTF8 --lc-ctype=en-US --lc-collate=en-US platform
+            psql -U postgres platform < platform.sql
+            echo -e "${GREEN}Auth database${NC}"
+            createdb -U postgres --template=template0 --encoding=UTF8 --lc-ctype=en-US --lc-collate=en-US auth
+            psql -U postgres auth < auth.sql
+            echo -e "${GREEN}app100 database${NC}"
+            createdb -U postgres --template=template0 --encoding=UTF8 --lc-ctype=en-US --lc-collate=en-US app100
+            psql -U postgres app100 < app100.sql
+            psql -U postgres -d postgres -f app100_template.sql
+            echo -e "${GREEN}All databases created successfully.${NC}"
+        elif [ "$arg" == "--update" ] || [ "$arg" == "-u" ]
+        then
+            echo -e "${GREEN}Removing app100 database...${NC}"
+            psql -U postgres -d postgres -f drop_app.sql
+            echo -e "${GREEN}Creating app100 database${NC}"
+            createdb -U postgres --template=template0 --encoding=UTF8 --lc-ctype=en-US --lc-collate=en-US app100
+            psql -U postgres app100 < app100.sql
+            psql -U postgres -d postgres -f app100_template.sql
+            echo -e "${GREEN}app100 database created successfully.${NC}"
+        elif [ "$arg" == "--delete" ] || [ "$arg" == "-d" ]
+        then
+            echo -e "${GREEN}Removing PrimeApps and app databases...${NC}"
+            psql -U postgres -d postgres -f drop.sql
+            echo -e "${GREEN}All PrimeApps and app databases removed successfully.${NC}"
+            echo -e "${GREEN}Removing tenant databases...${NC}"
+            psql -U postgres -d postgres -f drop_tenant.sql
+            echo -e "${GREEN}All tenant databases removed successfully.${NC}"
+        elif [ "$arg" == "--delete-tenants" ] || [ "$arg" == "-dt" ]
+        then
+            echo -e "${GREEN}Removing tenant databases...${NC}"
+            psql -U postgres -d postgres -f drop_tenant.sql
+            echo -e "${GREEN}All tenant databases removed successfully.${NC}"
+        fi
+    done
+else
+    echo -e "${RED}Cannot connect database server.${NC}"
+fi
