@@ -48,7 +48,7 @@ cd pre
 Copy startup folder to sample-dotnet root
 
 ```bash
-cp /sample-dotnet/ startup
+rsync -r ../sample-dotnet/startup .
 ```
 
 ### 5. Run `run` command
