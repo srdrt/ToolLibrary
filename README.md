@@ -23,7 +23,7 @@ cd sample-dotnet
 ```
 
 ### 2. Run `database` command
-Run the following command to create databases to your local PostgreSQL server in database folder
+Run the following command to create databases to your local PostgreSQL server.
 
 Enter database folder:
 ```bash
@@ -48,7 +48,7 @@ cd pre
 Copy startup folder to sample-dotnet root
 
 ```bash
-cp startup /sample-dotnet
+cp /sample-dotnet/ startup
 ```
 
 ### 5. Run `run` command
