@@ -1,0 +1,44 @@
+kind: pipeline
+name: pipeline
+
+trigger:
+  ref:
+    - refs/tags/*
+
+steps:
+  - name: docker
+    image: plugins/docker
+    settings:
+      repo: registry.primeapps.io/sampleuser/sample
+      registry: registry.primeapps.io
+      auto_tag: true
+      username:
+        from_secret: registry_username
+      password:
+        from_secret: registry_password
+  # - name: notify
+  #   image: plugins/webhook
+  #   settings:
+  #     urls: https://en435b0ujnmwb.x.pipedream.net/
+  #     content_type: application/json
+  #     template: |
+  #       {
+  #         "owner": "{{ repo.owner }}",
+  #         "repo": "{{ repo.name }}",
+  #         "status": "{{ build.status }}",
+  #       }
+  # - name: email
+  #   image: drillster/drone-email
+  #   host: smtp.yourdomain.com
+  #   username: smtp_user
+  #   password: smtp_password
+  #   skip_verify: true
+  #   from: sender@yourdomain.com
+  #   subject: >
+  #     [{{ build.status }}]
+  #     {{ repo.owner }}/{{ repo.name }}
+  #     ({{ build.branch }} - {{ truncate build.commit 8 }})
+  #   template: >
+  #     https://git.io/fjdPG
+  #   when:
+  #     status: [ success, changed, failure ]
