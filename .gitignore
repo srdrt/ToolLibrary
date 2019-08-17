@@ -213,3 +213,5 @@ FakesAssemblies/
 .vscode/*
 .history
 /.vscode
+
+*.dmp
