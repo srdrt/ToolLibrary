@@ -9,36 +9,50 @@ steps:
   - name: docker
     image: plugins/docker
     settings:
-      repo: registry.primeapps.io/sampleuser/sample
+      repo: registry.primeapps.io/adminprimeappsio/sample
       registry: registry.primeapps.io
       auto_tag: true
       username:
         from_secret: registry_username
       password:
         from_secret: registry_password
-  # - name: notify
-  #   image: plugins/webhook
-  #   settings:
-  #     urls: https://en435b0ujnmwb.x.pipedream.net/
-  #     content_type: application/json
-  #     template: |
-  #       {
-  #         "owner": "{{ repo.owner }}",
-  #         "repo": "{{ repo.name }}",
-  #         "status": "{{ build.status }}",
-  #       }
-  # - name: email
-  #   image: drillster/drone-email
-  #   host: smtp.yourdomain.com
-  #   username: smtp_user
-  #   password: smtp_password
-  #   skip_verify: true
-  #   from: sender@yourdomain.com
-  #   subject: >
-  #     [{{ build.status }}]
-  #     {{ repo.owner }}/{{ repo.name }}
-  #     ({{ build.branch }} - {{ truncate build.commit 8 }})
-  #   template: >
-  #     https://git.io/fjdPG
-  #   when:
-  #     status: [ success, changed, failure ]
+  - name: bash
+    image: alpine:3.10
+    environment:
+      DRONE_TAG: $$DRONE_TAG
+    commands:
+      - echo $DRONE_TAG
+      - awk -v "DRONE_TAG=$DRONE_TAG" '{gsub("{{IMAGE_TAG}}", DRONE_TAG, $0); print}' manifests/deployment.yaml > deployment.yaml
+  - name: kubernetes
+    image: fatihsever/drone-kubectl
+    environment:
+      PLUGIN_NAMESPACE: serverless
+      PLUGIN_KUBERNETES_SERVER:
+        from_secret: kubernetes_server
+      PLUGIN_KUBERNETES_CERT:
+        from_secret: kubernetes_certificate
+      PLUGIN_KUBERNETES_TOKEN:
+        from_secret: kubernetes_token
+    commands:
+      - init-kubectl
+      - kubectl patch deployment/sample --patch "$(cat deployment.yaml)" -n serverless
+  - name: email
+    image: drillster/drone-email
+    environment:
+      PLUGIN_HOST: smtp.yourdomain.com
+      PLUGIN_PORT: "587"
+      PLUGIN_USERNAME:
+        from_secret: email_username
+      PLUGIN_PASSWORD:
+        from_secret: email_password
+      PLUGIN_SKIP_VERIFY: "true"
+      PLUGIN_FROM: notifications@yourdomain.com
+      PLUGIN_RECIPIENTS: recipient@yourdomain.com
+      PLUGIN_RECIPIENTS_ONLY: "true"
+      PLUGIN_SUBJECT: >
+        [{{ build.status }}]
+        {{ repo.owner }}/{{ repo.name }}
+        ({{ repo.branch }} - {{ truncate commit.sha 8 }})
+      PLUGIN_BODY: https://git.io/fjF9T
+    when:
+      status: [ success, changed, failure ]
