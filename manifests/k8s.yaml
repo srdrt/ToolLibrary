@@ -28,6 +28,15 @@ roleRef:
   name: sample
   apiGroup: rbac.authorization.k8s.io
 ---
+apiVersion: v1
+data:
+  .dockerconfigjson: e2F1dGhzOntyZWdpc3RyeS5wcmltZWFwcHMuaW86e3VzZXJuYW1lOnNhbXBsZSxwYXNzd29yZDpwQHNzVzByZCxlbWFpbDphZG1pbkBzYW1wbGUuY29tLGF1dGg6QVdSdGFXNWhZMkN5Y0hKdlkyOXRPbUV4WTJWeVVISUd9fX0K
+kind: Secret
+metadata:
+  name: primeapps-registry-sample
+  namespace: serverless
+type: kubernetes.io/dockerconfigjson
+---
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -58,15 +67,6 @@ metadata:
   name: redis-sample
   namespace: serverless
 type: Opaque
----
-apiVersion: v1
-data:
-  .dockerconfigjson: e2F1dGhzOntyZWdpc3RyeS5wcmltZWFwcHMuaW86e3VzZXJuYW1lOnNhbXBsZSxwYXNzd29yZDpwQHNzVzByZCxlbWFpbDphZG1pbkBzYW1wbGUuY29tLGF1dGg6QVdSdGFXNWhZMkN5Y0hKdlkyOXRPbUV4WTJWeVVISUd9fX0K
-kind: Secret
-metadata:
-  name: primeapps-registry-sample
-  namespace: serverless
-type: kubernetes.io/dockerconfigjson
 ---
 kind: Deployment
 apiVersion: apps/v1
