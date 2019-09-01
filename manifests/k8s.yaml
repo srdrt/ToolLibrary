@@ -210,10 +210,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - sample.primeapps.net
+        - sample.test.primeapps.net
       secretName: sample-letsencrypt
   rules:
-    - host: sample.primeapps.net
+    - host: sample.test.primeapps.net
       http:
         paths:
           - path: "/"
