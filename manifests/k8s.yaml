@@ -35,6 +35,9 @@ metadata:
   namespace: serverless
 data:
   EnableJobs: "true"
+  HangfireRedisDb: "3"
+  HangfireRedisPrefix: '{sample}:'
+  RedisCacheDb: "4"
   HttpsRedirection: "false"
   AuthBaseUrl: "https://primeapps-auth-service-test.primeapps.svc.cluster.local/"
   Sample_ApiBaseUrl: "https://primeapps-app-service-test.primeapps.svc.cluster.local/api/"
@@ -98,6 +101,21 @@ spec:
                 configMapKeyRef:
                   name: sample-config
                   key: EnableJobs
+            - name: AppSettings__HangfireRedisDb
+              valueFrom:
+                configMapKeyRef:
+                  name: sample-config
+                  key: HangfireRedisDb
+            - name: AppSettings__HangfireRedisPrefix
+              valueFrom:
+                configMapKeyRef:
+                  name: sample-config
+                  key: HangfireRedisPrefix
+            - name: AppSettings__RedisCacheDb
+              valueFrom:
+                configMapKeyRef:
+                  name: sample-config
+                  key: RedisCacheDb
             - name: AppSettings__HttpsRedirection
               valueFrom:
                 configMapKeyRef:
