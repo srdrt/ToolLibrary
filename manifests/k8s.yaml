@@ -163,7 +163,6 @@ spec:
             timeoutSeconds: 2
             successThreshold: 1
             failureThreshold: 1
-      terminationGracePeriodSeconds: 120
 ---
 kind: Service
 apiVersion: v1
