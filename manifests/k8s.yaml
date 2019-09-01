@@ -153,7 +153,6 @@ spec:
                 configMapKeyRef:
                   name: sample-config
                   key: SentryDsn
-          terminationGracePeriodSeconds: 120
           readinessProbe:
             httpGet:
               path: /
@@ -164,6 +163,7 @@ spec:
             timeoutSeconds: 2
             successThreshold: 1
             failureThreshold: 1
+      terminationGracePeriodSeconds: 120
 ---
 kind: Service
 apiVersion: v1
