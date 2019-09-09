@@ -3,9 +3,74 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+echo -n "Password (press enter if empty)":
+read -s password
+export PGPASSWORD=$password 
+
+appId=100
+postgresLocale="en_US"
+
 if [[ "$OSTYPE" == "msys" ]]
 then
-	./database-win "$@"
-else 
-	./database-unix "$@"
+	postgresLocale="en-US"
+else
+	postgresLocale="en_US"
+fi
+
+if [ "$( psql -U postgres -w -tAc "SELECT 1 FROM pg_database WHERE datname='postgres'" )" = '1' ]
+then
+    for arg in "$@"
+    do
+        if [ "$arg" == "--create" ] || [ "$arg" == "-c" ]
+        then
+            echo -e "${GREEN}Creating PrimeApps databases...${NC}"
+            echo -e "${GREEN}Platform database${NC}"
+            createdb -U postgres --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale platform
+            psql -U postgres platform < platform.sql
+            echo -e "${GREEN}Auth database${NC}"
+            createdb -U postgres --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale auth
+            psql -U postgres auth < auth.sql
+            echo -e "${GREEN}app$appId database${NC}"
+            createdb -U postgres --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale app$appId
+            rm app$appId.dmp
+            echo -e "${GREEN}Downloading app$appId...${NC}"
+            curl https://studio.primeapps.io/api/dump/download?appId=$appId --output app$appId.dmp
+            pg_restore -U postgres -Fc -d app$appId app$appId.dmp
+            psql -U postgres -d postgres -f app"$appId"_template.sql
+
+            echo -e "${GREEN}All databases created successfully.${NC}"
+        elif [ "$arg" == "--update" ] || [ "$arg" == "-u" ]
+        then
+            if [ -z "$2" ]
+            then
+                echo -e "${RED}App id cannot be null. Try like this: ./database -u $appId${NC}"
+            else
+                echo -e "${GREEN}Removing app$2 database${NC}"
+                psql -U postgres -d postgres -f "drop_app$2.sql"
+                echo -e "${GREEN}Creating app$2 database${NC}"
+                createdb -U postgres --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale "app$2"
+                rm "app$2.dmp"
+                echo -e "${GREEN}Downloading app$2...${NC}"
+                curl "https://studio.primeapps.io/api/dump/download?appId=$2" --output "app$2.dmp"
+                pg_restore -U postgres -Fc -d "app$2" "app$2.dmp"
+                psql -U postgres -d postgres -f "app$2_template.sql"
+                echo -e "${GREEN}app$2 updated successfully.${NC}"
+            fi
+        elif [ "$arg" == "--delete" ] || [ "$arg" == "-d" ]
+        then
+            echo -e "${GREEN}Removing PrimeApps databases...${NC}"
+            psql -U postgres -d postgres -f drop.sql
+            echo -e "${GREEN}All PrimeApps databases removed successfully.${NC}"
+            echo -e "${GREEN}Removing tenant databases...${NC}"
+            psql -U postgres -d postgres -f drop_tenant.sql
+            echo -e "${GREEN}All tenant databases removed successfully.${NC}"
+        elif [ "$arg" == "--delete-tenants" ] || [ "$arg" == "-dt" ]
+        then
+            echo -e "${GREEN}Removing tenant databases...${NC}"
+            psql -U postgres -d postgres -f drop_tenant.sql
+            echo -e "${GREEN}All tenant databases removed successfully.${NC}"
+        fi
+    done
+else
+    echo -e "${RED}Cannot connect database server.${NC}"
 fi
