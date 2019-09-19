@@ -36,7 +36,7 @@ namespace Sample
                     builder =>
                     {
                         builder
-                            .AllowAnyOrigin()
+                            .SetIsOriginAllowed(_ => true)
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .AllowCredentials();
