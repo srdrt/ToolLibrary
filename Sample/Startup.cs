@@ -43,17 +43,28 @@ namespace Sample
                     });
             });
 
+            services.AddMemoryCache();
+            
             var redisConnection = Configuration.GetValue("AppSettings:RedisConnection", string.Empty);
 
             if (!string.IsNullOrEmpty(redisConnection))
             {
-                //Change redis database to db3 for standard cache
-                var redisConnectionCache = redisConnection.Remove(redisConnection.Length - 1, 1) + "3";
-                services.AddDistributedRedisCache(option => { option.Configuration = redisConnectionCache; });
+                //Distributed cache configuration
+                var redisCacheDb = Configuration.GetValue("AppSettings:RedisCacheDb", string.Empty);
+                redisConnection = redisConnection.Remove(redisConnection.Length - 1, 1) + (!string.IsNullOrEmpty(redisCacheDb) ? redisCacheDb : "7");
 
-                //Change redis database to db4 for Hangfire
-                var redisConnectionHangfire = redisConnection.Remove(redisConnection.Length - 1, 1) + "4";
-                var hangfireStorage = new RedisStorage(redisConnectionHangfire);
+                //services.AddDistributedRedisCache(option => { option.Configuration = redisConnection; });
+
+                //Hangfire configuration
+                var hangfireRedisPrefix = Configuration.GetValue("AppSettings:HangfireRedisPrefix", string.Empty);
+                var hangfireRedisDb = Configuration.GetValue("AppSettings:HangfireRedisDb", string.Empty);
+                var redisStorageOptions = new RedisStorageOptions
+                {
+                    Prefix = !string.IsNullOrEmpty(hangfireRedisPrefix) ? hangfireRedisPrefix : "{gaboras}:",
+                    Db = !string.IsNullOrEmpty(hangfireRedisDb) ? int.Parse(hangfireRedisDb) : 3
+                };
+                var hangfireStorage = new RedisStorage(redisConnection, redisStorageOptions);
+
                 GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
                 services.AddHangfire(x => x.UseStorage(hangfireStorage));
             }

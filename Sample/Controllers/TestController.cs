@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Sample.Jobs;
 using PrimeAppsDotNet;
 using PrimeAppsDotNet.Helpers;
 using ICacheHelper = Sample.Helpers.ICacheHelper;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Sample.Controllers
 {
