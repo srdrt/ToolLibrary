@@ -6,45 +6,49 @@ using Sample.Jobs;
 using PrimeAppsDotNet;
 using PrimeAppsDotNet.Helpers;
 using ICacheHelper = Sample.Helpers.ICacheHelper;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Sample.Controllers
 {
-    public class TestController : BaseController
-    {
-        private IConfiguration _configuration;
-        private ICacheHelper _cacheHelper;
+	public class TestController : BaseController
+	{
+		private IConfiguration _configuration;
+		private ICacheHelper _cacheHelper;
+		private IMemoryCache _memoryCache;
 
-        public TestController(IConfiguration configuration, ICacheHelper cacheHelper)
-        {
-            _configuration = configuration;
-            _cacheHelper = cacheHelper;
-        }
+		public TestController(IConfiguration configuration, ICacheHelper cacheHelper, IMemoryCache memoryCache)
+		{
+			_configuration = configuration;
+			_cacheHelper = cacheHelper;
+			_memoryCache = memoryCache;
 
-        public async Task<IActionResult> TestAction()
-        {
-            using (var primeapps = new PrimeApps("Sample", _configuration))
-            {
-                primeapps.TenantId = TenantId;
+		}
 
-                var record = _cacheHelper.Get<JObject>("contact1");
+		public async Task<IActionResult> TestAction()
+		{
+			using (var primeapps = new PrimeApps("Sample", _configuration, _memoryCache))
+			{
+				primeapps.TenantId = TenantId;
 
-                if (record.IsNullOrEmpty())
-                {
-                    record = await primeapps.RecordGet("contacts", 1);
+				var record = _cacheHelper.Get<JObject>("contact1");
 
-                    if (!record.IsNullOrEmpty())
-                        _cacheHelper.Set("contact1", record);
-                }
+				if (record.IsNullOrEmpty())
+				{
+					record = await primeapps.RecordGet("contacts", 1);
 
-                return Ok(record);
-            }
-        }
+					if (!record.IsNullOrEmpty())
+						_cacheHelper.Set("contact1", record);
+				}
 
-        public IActionResult TestJobAction()
-        {
-            Hangfire.BackgroundJob.Enqueue<TestJob>(x => x.Process(TenantId));
+				return Ok(record);
+			}
+		}
 
-            return Ok();
-        }
-    }
+		public IActionResult TestJobAction()
+		{
+			Hangfire.BackgroundJob.Enqueue<TestJob>(x => x.Process(TenantId));
+
+			return Ok();
+		}
+	}
 }
