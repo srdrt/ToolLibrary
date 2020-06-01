@@ -6,12 +6,18 @@
         <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
         <DockerTargetOS>Linux</DockerTargetOS>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
-        <PackageReference Include="PrimeApps" Version="1.20.153.1" />
+        <PackageReference Include="Microsoft.AspNetCore.App"/>
+        <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All"/>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3"/>
+        <PackageReference Include="PrimeApps" Version="1.20.153.1"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="aspnetapp.pfx">
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </Content>
     </ItemGroup>
     
 </Project>
