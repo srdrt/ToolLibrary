@@ -8,10 +8,10 @@ Before running this sample locally, you need to install and start PrimeApps Runt
 
 ### Setup
 
-1. Fork this repository
-2. Develop your code
-3. Build Docker image
-4. Publish Docker container
+1. [Fork this repository](#1-fork-this-repository)
+2. [Develop your code](#2-develop-your-code)
+3. [Build Docker image](#3-build-docker-image)
+4. [Publish Docker container](#4-publish-docker-container)
 
 #### 1. Fork this repository
 In the top-right corner of the page, click Fork.
