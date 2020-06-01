@@ -1,1 +1,0 @@
-ngToast.create({ content: 'Test', className: 'warning' });

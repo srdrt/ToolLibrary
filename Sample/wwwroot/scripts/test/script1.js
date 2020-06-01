@@ -1,1 +1,0 @@
-console.log(scope.$parent.relatedModule.related_module);

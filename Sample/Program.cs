@@ -15,7 +15,6 @@ namespace Sample
             return WebHost.CreateDefaultBuilder(args)
                 .UseSetting("https_port", "443")
                 .UseStartup<Startup>()
-                .UseSentry()
                 .Build();
         }
     }
