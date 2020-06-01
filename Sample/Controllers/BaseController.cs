@@ -24,16 +24,13 @@ namespace Sample.Controllers
                 return;
             }
 
-            var tenantId = 0;
-            var userId = 0;
-
-            if (!int.TryParse(xTenantId, out tenantId))
+            if (!int.TryParse(xTenantId, out var tenantId))
             {
                 context.Result = new BadRequestObjectResult("X-Tenant-Id must be a number.");
                 return;
             }
 
-            if (!int.TryParse(xUserId, out userId))
+            if (!int.TryParse(xUserId, out var userId))
             {
                 context.Result = new BadRequestObjectResult("X-User-Id must be a number.");
                 return;

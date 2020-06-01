@@ -1,8 +1,7 @@
-﻿using Hangfire;
-using Hangfire.Redis;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +19,9 @@ namespace Sample
 
         public void ConfigureServices(IServiceCollection services)
         {
-            DIRegister(services, Configuration);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton(Configuration);
+            services.AddHttpContextAccessor();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -44,30 +45,6 @@ namespace Sample
             });
 
             services.AddMemoryCache();
-            
-            var redisConnection = Configuration.GetValue("AppSettings:RedisConnection", string.Empty);
-
-            if (!string.IsNullOrEmpty(redisConnection))
-            {
-                //Distributed cache configuration
-                var redisCacheDb = Configuration.GetValue("AppSettings:RedisCacheDb", string.Empty);
-                redisConnection = redisConnection.Remove(redisConnection.Length - 1, 1) + (!string.IsNullOrEmpty(redisCacheDb) ? redisCacheDb : "7");
-
-                //services.AddDistributedRedisCache(option => { option.Configuration = redisConnection; });
-
-                //Hangfire configuration
-                var hangfireRedisPrefix = Configuration.GetValue("AppSettings:HangfireRedisPrefix", string.Empty);
-                var hangfireRedisDb = Configuration.GetValue("AppSettings:HangfireRedisDb", string.Empty);
-                var redisStorageOptions = new RedisStorageOptions
-                {
-                    Prefix = !string.IsNullOrEmpty(hangfireRedisPrefix) ? hangfireRedisPrefix : "{gaboras}:",
-                    Db = !string.IsNullOrEmpty(hangfireRedisDb) ? int.Parse(hangfireRedisDb) : 3
-                };
-                var hangfireStorage = new RedisStorage(redisConnection, redisStorageOptions);
-
-                GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
-                services.AddHangfire(x => x.UseStorage(hangfireStorage));
-            }
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -77,6 +54,21 @@ namespace Sample
             else
                 app.UseExceptionHandler("/Home/Error");
 
+            var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
+
+            if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
+            {
+                var fordwardedHeaderOptions = new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                };
+
+                fordwardedHeaderOptions.KnownNetworks.Clear();
+                fordwardedHeaderOptions.KnownProxies.Clear();
+
+                app.UseForwardedHeaders(fordwardedHeaderOptions);
+            }
+            
             var httpsRedirection = Configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
 
             if (!string.IsNullOrEmpty(httpsRedirection) && bool.Parse(httpsRedirection))
@@ -87,8 +79,6 @@ namespace Sample
             app.UseCors("AllowAll");
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
-            JobConfiguration(app, Configuration);
 
             app.UseMvc(routes =>
             {

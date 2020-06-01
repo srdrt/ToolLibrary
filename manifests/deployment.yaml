@@ -1,6 +1,0 @@
-spec:
-  template:
-    spec:
-      containers:
-        - name: sample
-          image: registry.primeapps.io/sampleuser/sample:{{IMAGE_TAG}}
