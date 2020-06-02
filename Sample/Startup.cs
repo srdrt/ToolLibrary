@@ -34,12 +34,14 @@ namespace Sample
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(opt =>
                 {
+                    opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                     opt.SerializerSettings.ContractResolver = new DefaultContractResolver
                     {
-                        NamingStrategy = new SnakeCaseNamingStrategy(),
+                        NamingStrategy = new SnakeCaseNamingStrategy()
                     };
                     opt.SerializerSettings.Converters.Add(new StringEnumConverter());
                 });
@@ -61,7 +63,7 @@ namespace Sample
 
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Sample api", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Sample API", Version = "v1" });
 
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -76,18 +78,20 @@ namespace Sample
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
-                          new OpenApiSecurityScheme
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
                             {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "Bearer"
-                                }
-                            },
-                            new string[] {}
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
                     }
                 });
             });
+
+            services.AddSwaggerGenNewtonsoftSupport();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -120,10 +124,7 @@ namespace Sample
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sample API V1");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sample API v1"); });
 
             app.UseCors("AllowAll");
             app.UseStaticFiles();
@@ -157,15 +158,7 @@ namespace Sample
                     In = ParameterLocation.Header,
                     Required = true
                 });
-
-                operation.Parameters.Add(new OpenApiParameter
-                {
-                    Name = "X-User-Id",
-                    In = ParameterLocation.Header,
-                    Required = true
-                });
             }
         }
-
     }
 }

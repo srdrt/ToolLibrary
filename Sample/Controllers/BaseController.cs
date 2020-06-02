@@ -12,7 +12,6 @@ namespace Sample.Controllers
         public static string Authorization { get; set; }
         public static int AppId { get; set; }
         public static int TenantId { get; set; }
-        public static int UserId { get; set; }
         public PrimeApps PrimeApps => _primeApps ?? (_primeApps = GetPrimeAppsClient());
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -21,7 +20,7 @@ namespace Sample.Controllers
 
             if (!requestHeader.TryGetValue("Authorization", out var authorization))
             {
-                context.Result = new BadRequestObjectResult("Authorization cannot be null.");
+                context.Result = new UnauthorizedObjectResult(null);
                 return;
             }
 
@@ -37,12 +36,6 @@ namespace Sample.Controllers
                 return;
             }
 
-            if (!requestHeader.TryGetValue("X-User-Id", out var xUserId))
-            {
-                context.Result = new BadRequestObjectResult("X-User-Id cannot be null.");
-                return;
-            }
-
             if (!int.TryParse(xAppId, out var appId))
             {
                 context.Result = new BadRequestObjectResult("X-App-Id must be a number.");
@@ -55,16 +48,9 @@ namespace Sample.Controllers
                 return;
             }
 
-            if (!int.TryParse(xUserId, out var userId))
-            {
-                context.Result = new BadRequestObjectResult("X-User-Id must be a number.");
-                return;
-            }
-
             Authorization = authorization;
             AppId = appId;
             TenantId = tenantId;
-            UserId = userId;
         }
 
         private PrimeApps GetPrimeAppsClient()
