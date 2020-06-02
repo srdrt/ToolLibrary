@@ -23,7 +23,7 @@ In the top-right corner of the page, click Fork.
 You can clone your forked repository to your local machine now. Then develop your APIs, scripts and, components. Commit and push your code.
 
 #### 3. Build Docker image
-You can build and push Docker image to GitHub Packages with simple steps. We've created ready-to-use Dockerfile for you.
+You can build and push Docker image to GitHub Packages with simple steps. We've created ready-to-use Dockerfile and Github Build Actions for you.
 
 ##### 3.1. Click "Actions" tab in your forked repository.
 > <img src="http://file.primeapps.io/assets/github/actions_tab.jpg" alt="drawing" width="350"/>
