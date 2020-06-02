@@ -4,9 +4,9 @@ angular.module('primeapps')
 
     .controller('DefaultController', ['$scope', '$http',
         function ($scope, $http) {
-        
-            $http.get(appConfigs.apiUrl + '/Sample/GetAllUsers').then(function (response) {
+
+            $http.post(appConfigs.apiUrl + '/api/sample/get_all_users', {}).then(function (response) {
                 $scope.users = response.data;
             });
-            
+
         }]);
