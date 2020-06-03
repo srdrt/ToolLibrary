@@ -38,7 +38,7 @@ You can build and push Docker image to GitHub Packages with simple steps. We've 
 > <img src="http://file.primeapps.io/assets/github/releases_new.jpg" alt="drawing" width="500"/>
 
 ##### 3.5. Enter v1.0 in "Tag version" input and click "Publish release" button. After that, a build is started automatically. You can see progress in "Actions" menu. It will be finished in about 2 minutes.
-> <img src="http://file.primeapps.io/assets/github/releases_form.jpg" alt="drawing" width="400"/>
+> <img src="http://file.primeapps.io/assets/github/releases_tag.jpg" alt="drawing" width="400"/>
 
 > <img src="http://file.primeapps.io/assets/github/releases_button.jpg" alt="drawing" width="200"/>
 
@@ -47,7 +47,7 @@ You can build and push Docker image to GitHub Packages with simple steps. We've 
 After the build is finished, your Docker image will be ready in "Packages" menu which is a submenu under "Code" tab. You can find the image path there. Something like that:
 
 ```bash
-docker pull docker.pkg.github.com/username/sample-dotnet/primeapps-sample:1.0
+docker pull docker.pkg.github.com/username/sample-dotnet/primeapps-sample:1.0.0
 ```
 
 You can now create a container in PrimeApps Studio using this information.
