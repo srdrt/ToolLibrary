@@ -2,7 +2,7 @@
 
 componentsFolder="wwwroot/components/"
 scriptsFolder="wwwroot/components/"
-structureFile='wwwroot/frontend-structure.json'
+structureFile='wwwroot/structure.json'
 
 function trim {
     local str=${1#$"$2"}

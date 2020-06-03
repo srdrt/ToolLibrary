@@ -9,7 +9,7 @@ RUN ./structure.sh
 
 FROM build AS publish
 RUN dotnet publish "Sample.csproj" --no-restore --self-contained false -c Debug -o /app
-RUN cp wwwroot/frontend-structure.json /app/wwwroot/frontend-structure.json
+RUN cp wwwroot/structure.json /app/wwwroot/structure.json
 
 FROM microsoft/dotnet:2.2-aspnetcore-runtime-stretch-slim AS base
 WORKDIR /app
