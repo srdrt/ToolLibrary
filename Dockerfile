@@ -5,9 +5,11 @@ RUN dotnet restore "Sample/Sample.csproj"
 COPY . .
 WORKDIR "/src/Sample"
 RUN dotnet build "Sample.csproj" -c Debug -o /app
+RUN ./structure.sh
 
 FROM build AS publish
 RUN dotnet publish "Sample.csproj" --no-restore --self-contained false -c Debug -o /app
+RUN cp wwwroot/frontend-structure.json /app/wwwroot/frontend-structure.json
 
 FROM microsoft/dotnet:2.2-aspnetcore-runtime-stretch-slim AS base
 WORKDIR /app
