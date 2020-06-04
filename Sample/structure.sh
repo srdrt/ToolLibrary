@@ -1,7 +1,7 @@
 #!/bin/bash
 
 componentsFolder="wwwroot/components/"
-scriptsFolder="wwwroot/components/"
+scriptsFolder="wwwroot/scripts"
 structureFile='wwwroot/structure.json'
 
 function trim {
